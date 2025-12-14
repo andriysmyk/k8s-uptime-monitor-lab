@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: uptime
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+        - name: worker
+          image: uptime-worker:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9102
+          env:
+            - name: REDIS_HOST
+              value: "redis"
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: uptime-config
+                  key: REDIS_PORT
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: uptime-secret
+                  key: REDIS_PASSWORD
+            - name: WORKER_INTERVAL_DEFAULT
+              valueFrom:
+                configMapKeyRef:
+                  name: uptime-config
+                  key: WORKER_INTERVAL_DEFAULT
+            - name: HTTP_TIMEOUT_SECONDS
+              valueFrom:
+                configMapKeyRef:
+                  name: uptime-config
+                  key: HTTP_TIMEOUT_SECONDS
+            - name: WORKER_METRICS_PORT
+              value: "9102"
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "512Mi"

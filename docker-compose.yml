@@ -1,0 +1,32 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: .
+      dockerfile: app/Dockerfile.api
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+
+  worker:
+    build:
+      context: .
+      dockerfile: app/Dockerfile.worker
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - WORKER_INTERVAL_DEFAULT=10
+      - HTTP_TIMEOUT_SECONDS=5
+      - WORKER_METRICS_PORT=9102
+    ports:
+      - "9102:9102"
+    depends_on:
+      - redis

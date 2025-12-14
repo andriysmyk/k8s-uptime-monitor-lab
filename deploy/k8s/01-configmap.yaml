@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: uptime-config
+  namespace: uptime
+data:
+  WORKER_INTERVAL_DEFAULT: "10"
+  HTTP_TIMEOUT_SECONDS: "5"
+  REDIS_PORT: "6379"
