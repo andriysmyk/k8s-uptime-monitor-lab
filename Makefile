@@ -6,8 +6,8 @@ compose-up:
 compose-down:
 	docker compose down -v
 
-# Для OrbStack: важливо, щоб Docker images були доступні локальному k8s.
-# Орієнтир: спочатку збери images локально.
+# For OrbStack: Docker images must be available locally for the Kubernetes cluster.
+# Build images locally before applying Kubernetes manifests.
 build-images:
 	docker build -t uptime-api:local -f app/Dockerfile.api .
 	docker build -t uptime-worker:local -f app/Dockerfile.worker .
@@ -30,3 +30,6 @@ k8s-status:
 
 port-forward:
 	kubectl -n uptime port-forward svc/api 8000:80
+
+ingress-forward:
+	kubectl -n ingress-nginx port-forward svc/ingress-nginx-controller 8080:80
